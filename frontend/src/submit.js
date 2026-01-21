@@ -7,7 +7,6 @@ export const SubmitButton = () => {
 
   const handleSubmit = async () => {
     try {
-      // Prepare the pipeline data
       const pipelineData = {
         nodes: nodes.map(node => ({
           id: node.id,
@@ -21,7 +20,6 @@ export const SubmitButton = () => {
         }))
       };
 
-      // Send POST request to backend
       const response = await fetch('http://localhost:8000/pipelines/parse', {
         method: 'POST',
         headers: {
@@ -35,8 +33,6 @@ export const SubmitButton = () => {
       }
 
       const result = await response.json();
-      
-      // Display results in an alert
       showResultAlert(result);
 
     } catch (error) {
@@ -48,91 +44,111 @@ export const SubmitButton = () => {
   const showResultAlert = (result) => {
     const { num_nodes, num_edges, is_dag } = result;
     
-    const message = `
-Pipeline Analysis Results:
-━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-📊 Number of Nodes: ${num_nodes}
-🔗 Number of Edges: ${num_edges}
-${is_dag ? '✅' : '❌'} Is Valid DAG: ${is_dag ? 'Yes' : 'No'}
-
-${!is_dag ? '\n⚠️ Warning: Your pipeline contains cycles!\nA valid pipeline must be a Directed Acyclic Graph (DAG).' : ''}
-    `.trim();
-
-    // Create a custom styled alert
     const alertDiv = document.createElement('div');
     alertDiv.style.cssText = `
       position: fixed;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      background: white;
-      padding: 30px;
+      background: #1f2937;
+      padding: 32px;
       border-radius: 12px;
-      box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.9), 0 0 40px rgba(124, 58, 237, 0.3);
       z-index: 10000;
-      max-width: 500px;
+      max-width: 450px;
+      width: 90%;
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+      border: 2px solid #374151;
     `;
 
     alertDiv.innerHTML = `
-      <div style="text-align: center;">
-        <h2 style="margin: 0 0 20px 0; color: #1a202c; font-size: 24px;">
-          Pipeline Analysis
-        </h2>
+      <div>
+        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 24px;">
+          <div style="
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #7c3aed 0%, #6366f1 100%);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            box-shadow: 0 4px 12px rgba(124, 58, 237, 0.4);
+          ">
+            📊
+          </div>
+          <h2 style="margin: 0; color: #f3f4f6; font-size: 22px; font-weight: 700;">
+            Pipeline Analysis
+          </h2>
+        </div>
         
-        <div style="background: #f7fafc; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
-          <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
-            <span style="font-weight: 600; color: #4a5568;">📊 Nodes:</span>
-            <span style="font-weight: 700; color: #2d3748; font-size: 20px;">${num_nodes}</span>
+        <div style="background: #111827; padding: 20px; border-radius: 10px; margin-bottom: 20px; border: 1px solid #374151;">
+          <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #374151;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span style="font-size: 18px;">🔵</span>
+              <span style="font-weight: 600; color: #9ca3af; font-size: 14px;">Nodes</span>
+            </div>
+            <span style="font-weight: 700; color: #f3f4f6; font-size: 20px;">${num_nodes}</span>
           </div>
           
-          <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
-            <span style="font-weight: 600; color: #4a5568;">🔗 Edges:</span>
-            <span style="font-weight: 700; color: #2d3748; font-size: 20px;">${num_edges}</span>
+          <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #374151;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span style="font-size: 18px;">🔗</span>
+              <span style="font-weight: 600; color: #9ca3af; font-size: 14px;">Edges</span>
+            </div>
+            <span style="font-weight: 700; color: #f3f4f6; font-size: 20px;">${num_edges}</span>
           </div>
           
-          <div style="display: flex; justify-content: space-between; align-items: center;">
-            <span style="font-weight: 600; color: #4a5568;">Is Valid DAG:</span>
-            <span style="font-weight: 700; font-size: 20px; color: ${is_dag ? '#48bb78' : '#f56565'};">
-              ${is_dag ? '✅ Yes' : '❌ No'}
+          <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 0;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span style="font-size: 18px;">${is_dag ? '✅' : '❌'}</span>
+              <span style="font-weight: 600; color: #9ca3af; font-size: 14px;">Valid DAG</span>
+            </div>
+            <span style="font-weight: 700; font-size: 20px; color: ${is_dag ? '#10b981' : '#ef4444'};">
+              ${is_dag ? 'Yes' : 'No'}
             </span>
           </div>
         </div>
         
         ${!is_dag ? `
-          <div style="background: #fff5f5; border: 2px solid #fc8181; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
-            <p style="margin: 0; color: #c53030; font-weight: 600;">
-              ⚠️ Warning: Pipeline contains cycles!
-            </p>
-            <p style="margin: 10px 0 0 0; color: #742a2a; font-size: 14px;">
-              A valid pipeline must be a Directed Acyclic Graph (DAG).
-            </p>
+          <div style="background: #7f1d1d; border-left: 4px solid #ef4444; padding: 14px 16px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #991b1b;">
+            <div style="display: flex; gap: 10px;">
+              <span style="font-size: 20px;">⚠️</span>
+              <div>
+                <p style="margin: 0 0 6px 0; color: #fca5a5; font-size: 14px; font-weight: 600;">
+                  Cycle Detected
+                </p>
+                <p style="margin: 0; color: #fecaca; font-size: 13px; line-height: 1.5;">
+                  Your pipeline contains cycles. A valid pipeline must be a Directed Acyclic Graph (DAG).
+                </p>
+              </div>
+            </div>
           </div>
         ` : ''}
         
         <button 
           onclick="this.parentElement.parentElement.remove(); document.getElementById('alert-overlay').remove();"
           style="
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            width: 100%;
+            background: linear-gradient(135deg, #7c3aed 0%, #6366f1 100%);
             color: white;
             border: none;
-            padding: 12px 30px;
-            border-radius: 6px;
-            font-size: 16px;
-            font-weight: 600;
+            padding: 14px;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 700;
             cursor: pointer;
-            transition: transform 0.2s;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 4px 12px rgba(124, 58, 237, 0.4);
           "
-          onmouseover="this.style.transform='scale(1.05)'"
-          onmouseout="this.style.transform='scale(1)'"
+          onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(124, 58, 237, 0.6)'"
+          onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(124, 58, 237, 0.4)'"
         >
           Close
         </button>
       </div>
     `;
 
-    // Create overlay
     const overlay = document.createElement('div');
     overlay.id = 'alert-overlay';
     overlay.style.cssText = `
@@ -141,8 +157,9 @@ ${!is_dag ? '\n⚠️ Warning: Your pipeline contains cycles!\nA valid pipeline 
       left: 0;
       right: 0;
       bottom: 0;
-      background: rgba(0, 0, 0, 0.5);
+      background: rgba(0, 0, 0, 0.8);
       z-index: 9999;
+      backdrop-filter: blur(4px);
     `;
     overlay.onclick = () => {
       alertDiv.remove();
@@ -154,33 +171,35 @@ ${!is_dag ? '\n⚠️ Warning: Your pipeline contains cycles!\nA valid pipeline 
   };
 
   return (
-    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: '20px' }}>
-      <button 
-        type="submit" 
-        onClick={handleSubmit}
-        style={{
-          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-          color: 'white',
-          border: 'none',
-          padding: '12px 30px',
-          borderRadius: '8px',
-          fontSize: '16px',
-          fontWeight: '600',
-          cursor: 'pointer',
-          boxShadow: '0 4px 15px rgba(102, 126, 234, 0.4)',
-          transition: 'all 0.3s ease'
-        }}
-        onMouseOver={(e) => {
-          e.target.style.transform = 'translateY(-2px)';
-          e.target.style.boxShadow = '0 6px 20px rgba(102, 126, 234, 0.6)';
-        }}
-        onMouseOut={(e) => {
-          e.target.style.transform = 'translateY(0)';
-          e.target.style.boxShadow = '0 4px 15px rgba(102, 126, 234, 0.4)';
-        }}
-      >
-        Submit Pipeline
-      </button>
+    <div className="submit-wrapper">
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <button 
+          type="submit" 
+          onClick={handleSubmit}
+          style={{
+            background: 'linear-gradient(135deg, #7c3aed 0%, #6366f1 100%)',
+            color: 'white',
+            border: 'none',
+            padding: '14px 40px',
+            borderRadius: '8px',
+            fontSize: '15px',
+            fontWeight: '700',
+            cursor: 'pointer',
+            transition: 'all 0.2s',
+            boxShadow: '0 4px 12px rgba(124, 58, 237, 0.4)'
+          }}
+          onMouseOver={(e) => {
+            e.target.style.transform = 'translateY(-2px)';
+            e.target.style.boxShadow = '0 6px 20px rgba(124, 58, 237, 0.6)';
+          }}
+          onMouseOut={(e) => {
+            e.target.style.transform = 'translateY(0)';
+            e.target.style.boxShadow = '0 4px 12px rgba(124, 58, 237, 0.4)';
+          }}
+        >
+        Analyze Pipeline
+        </button>
+      </div>
     </div>
   );
 };
